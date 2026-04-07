@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyMind | Track cognitive load & prevent burnout</title>
+    <meta name="description" content="Monitor cognitive load, predict burnout, and optimize study sessions with AI-powered insights.">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="progstyle.css">
+</head>
+<body>
+
+<!-- ═══════════ LANDING PAGE ═══════════ -->
+<section id="landing">
+    <div class="hero">
+        <h1>Track Your Study Load.<br>Avoid Mental Burnout.</h1>
+        <p>Monitor cognitive load, predict burnout, and get AI-powered break recommendations. Real-time biometric insights for smarter studying.</p>
+        <a href="#" onclick="showDashboard(); return false;" class="btn">Start Tracking</a>
+    </div>
+
+    <div class="features">
+        <h2 class="section-title">Everything you need to stay focused</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">01 / load</div>
+                <h3>Cognitive Load Meter</h3>
+                <p>Real-time 0–100 load score based on difficulty, time & switches</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">02 / predict</div>
+                <h3>Burnout Prediction</h3>
+                <p>AI forecasts when you'll hit fatigue and suggests schedule swaps</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">03 / bio</div>
+                <h3>Biometric Sync</h3>
+                <p>HRV & heart rate from your smartwatch for objective stress data</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">04 / shield</div>
+                <h3>Distraction Shield</h3>
+                <p>Auto-blocks distractions when cognitive load exceeds safe threshold</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">05 / route</div>
+                <h3>Smart Task Routing</h3>
+                <p>Matches task intensity to your current energy level in real-time</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">06 / recover</div>
+                <h3>Micro-Recovery Rx</h3>
+                <p>Context-aware break prescriptions based on fatigue type</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">07 / cost</div>
+                <h3>Switch Cost Meter</h3>
+                <p>Visualizes the real cognitive penalty of subject switching</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">08 / env</div>
+                <h3>Environmental Intel</h3>
+                <p>Tracks time, noise & context to find your optimal study conditions</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="why-matters">
+        <div class="why-container">
+            <div class="why-text">
+                <h2>Why students burn out</h2>
+                <ul>
+                    <li>Students overload their brains with back-to-back subjects</li>
+                    <li>Frequent switching increases mental fatigue by 40%</li>
+                    <li>Poor decisions happen when cognitive load is high</li>
+                    <li>Our system helps you study smarter, not harder</li>
+                </ul>
+            </div>
+            <div class="why-stats">
+                <div class="stat-bubble"><span class="stat-number">78%</span><div>students report mental exhaustion</div></div>
+                <div class="stat-bubble"><span class="stat-number">2.3x</span><div>more focus with load management</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<section id="dashboard" style="display:none;">
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Study Dashboard</h1>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" onclick="showDashboard(); return false;">Dashboard</a>
+            <a href="#" class="nav-link" onclick="showTaskForm(); return false;">+ Add Task</a>
+        </div>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-label">Load Score</div>
+            <div class="summary-value" id="loadScore">--<span class="summary-unit">/100</span></div>
+            <div class="load-meter"><div class="load-fill" id="loadFill" style="width:0%"></div></div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Study Time</div>
+            <div class="summary-value" id="studyTime">--<span class="summary-unit">hrs</span></div>
+            <div style="color:var(--text-dim);font-size:13px;margin-top:10px;" class="mono">today</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Task Switches</div>
+            <div class="summary-value" id="switchCount">--</div>
+            <div style="color:var(--text-dim);font-size:13px;margin-top:10px;">today</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Fatigue Level</div>
+            <div class="summary-value" id="fatigueLevel" style="font-size:28px;">--</div>
+            <div class="load-meter"><div class="load-fill" style="width:0%;background:var(--text-muted);"></div></div>
+        </div>
+    </div>
+
+    <div class="charts-row">
+        <div class="chart-card">
+            <div class="chart-header">
+                <span>Cognitive load over time</span>
+                <span class="badge">last 7 days</span>
+            </div>
+            <div style="position:relative;width:100%;height:200px;">
+                <canvas id="loadChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-header"><span>Stress forecast</span><span class="badge">today</span></div>
+            <div class="burnout-timeline" id="burnoutTimeline">
+                <!-- Dynamic content from backend -->
+                <div class="timeline-block safe"><div class="time">Loading...</div><div class="load-val">--</div></div>
+            </div>
+            <p style="margin-top:16px;color:var(--text-dim);font-size:12px;" class="mono">predicted load by hour</p>
+        </div>
+    </div>
+
+    <div class="insights-panel" id="insightsPanel">
+        <div class="insight-item"><div class="insight-icon">📋</div><div class="insight-text">Loading insights...</div></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">⬡ Biometric Sync</div>
+            <div class="panel-subtitle">smartwatch data</div>
+        </div>
+        <div class="bio-grid">
+            <div class="bio-card">
+                <div class="bio-label">Heart Rate Variability</div>
+                <div class="bio-value" id="hrvValue">--<span class="unit"> ms</span></div>
+                <div class="bio-status" id="hrvStatus">▸ Loading...</div>
+                <div class="hrv-bar"><div class="hrv-fill" id="hrvFill" style="width:0%"></div></div>
+            </div>
+            <div class="bio-card">
+                <div class="bio-label">Resting Heart Rate</div>
+                <div class="bio-value">--<span class="unit"> bpm</span></div>
+                <div class="bio-status">▸ Loading...</div>
+            </div>
+            <div class="bio-card">
+                <div class="bio-label">Stress Index</div>
+                <div class="bio-value" id="stressIndex">--<span class="unit"> /100</span></div>
+                <div class="bio-status" id="stressStatus">▸ Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">◈ Burnout Prediction</div>
+            <div class="panel-subtitle">AI forecast</div>
+        </div>
+        <div class="burnout-suggestion">
+            <span class="tag">AI ▸</span>
+            <span id="burnoutAdvice">Loading prediction data...</span>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">◇ Smart Task Routing</div>
+            <div class="panel-subtitle">current load: <span id="routingLoad">--</span></div>
+        </div>
+        <div class="task-list" id="taskList">
+            <div class="task-item"><span class="task-name">Loading recommendations...</span></div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">⊕ Micro-Recovery Rx</div>
+            <div class="panel-subtitle">prescribed for your fatigue type</div>
+        </div>
+        <div class="recovery-cards">
+            <div class="recovery-card active-rx" id="rxVisual">
+                <div class="recovery-type">visual fatigue</div>
+                <div class="recovery-title">20-20-20 Eye Reset</div>
+                <div class="recovery-desc">Look at something 20ft away for 20 seconds.</div>
+                <div class="recovery-timer">5:00</div>
+            </div>
+            <div class="recovery-card" id="rxCognitive">
+                <div class="recovery-type">cognitive fatigue</div>
+                <div class="recovery-title">Breath Box Protocol</div>
+                <div class="recovery-desc">4-count inhale, hold, exhale, hold.</div>
+                <div class="recovery-timer">4:00</div>
+            </div>
+            <div class="recovery-card" id="rxMotor">
+                <div class="recovery-type">motor fatigue</div>
+                <div class="recovery-title">Micro-Movement Break</div>
+                <div class="recovery-desc">30-second stretch sequence.</div>
+                <div class="recovery-timer">2:00</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">⇄ Context Switch Cost</div>
+            <div class="panel-subtitle">today's penalty</div>
+        </div>
+        <div class="switch-viz">
+            <div class="switch-penalty">
+                <div class="switch-penalty-value" id="totalSwitchCost">+--</div>
+                <div class="switch-penalty-label">total load tax</div>
+            </div>
+            <div class="switch-history" id="switchHistory">
+                <div class="switch-event"><span>--</span><span class="switch-arrow">→</span><span>--</span><span class="switch-cost">--</span></div>
+            </div>
+        </div>
+        <div style="background:var(--surface-2);padding:12px 16px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border);" class="mono">
+            ▸ Each subject switch adds cognitive penalty. Minimize switching between dissimilar subjects.
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">⛨ Distraction Shield</div>
+            <div class="panel-subtitle" id="shieldAutoLabel">auto-activates at threshold</div>
+        </div>
+        <div class="shield-container">
+            <div class="shield-toggle" id="shieldToggle" onclick="toggleShield()">
+                <div class="knob"></div>
+            </div>
+            <div class="shield-info">
+                <div class="shield-status" id="shieldStatusText">Loading...</div>
+                <div class="shield-desc" id="shieldDesc">Loading shield settings...</div>
+            </div>
+        </div>
+        <div class="blocked-list" id="blockedList">
+            <div class="blocked-item">youtube.com</div>
+            <div class="blocked-item">twitter.com</div>
+            <div class="blocked-item">instagram.com</div>
+            <div class="blocked-item">reddit.com</div>
+            <div class="blocked-item">tiktok.com</div>
+        </div>
+    </div>
+
+    <!-- Environmental Intel -->
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">◉ Environmental Intel</div>
+            <div class="panel-subtitle">context-aware</div>
+        </div>
+        <div class="env-grid">
+            <div class="env-card">
+                <div class="env-label">Time Window</div>
+                <div class="env-value" id="envTime">--</div>
+                <div class="env-insight">Loading...</div>
+            </div>
+            <div class="env-card">
+                <div class="env-label">Ambient Noise</div>
+                <div class="env-value" id="envNoise">--<span class="unit"> dB</span></div>
+                <div class="env-insight">Loading...</div>
+            </div>
+            <div class="env-card">
+                <div class="env-label">Optimal Window</div>
+                <div class="env-value" id="optimalWindow">--</div>
+                <div class="env-insight">Based on your historical performance</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gamification Row -->
+    <div class="gami-row">
+        <div class="badge-card">
+            <div class="badge-card-icon">density</div>
+            <div>
+                <div style="font-weight:600;font-size:13px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;" class="mono">Decision density</div>
+                <div style="font-size:28px;font-weight:700;color:var(--accent-strong);" class="mono">--</div>
+            </div>
+        </div>
+        <div class="badge-card">
+            <div class="badge-card-icon">focus</div>
+            <div>
+                <div style="font-weight:600;font-size:13px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;" class="mono">Focus stability</div>
+                <div style="font-size:28px;font-weight:700;color:var(--accent-strong);" class="mono">--</div>
+            </div>
+        </div>
+        <div class="badge-card">
+            <div class="badge-card-icon">streak</div>
+            <div>
+                <div style="font-weight:600;font-size:13px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;" class="mono">Study streak</div>
+                <div style="color:var(--text-muted);font-size:13px;">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Break Alert -->
+    <div id="breakPopup" class="alert-banner danger">⚠ Warning: Your mental load is high. Take a break.</div>
+  </div>
+</section>
+
+<!-- ═══════════ TASK FORM ═══════════ -->
+<section id="taskForm" style="display:none;">
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Log study session</h1>
+        <div class="nav-links">
+            <a href="#" class="nav-link" onclick="showDashboard(); return false;">Dashboard</a>
+            <a href="#" class="nav-link active" onclick="showTaskForm(); return false;">+ Add Task</a>
+        </div>
+    </div>
+    <div class="form-card">
+        <div class="form-group">
+            <label class="form-label">Subject name</label>
+            <input class="form-input" type="text" placeholder="e.g. Mathematics, Physics" id="subjectName">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Duration (min)</label>
+                <input class="form-input" type="number" value="60" id="duration">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Difficulty (1-5)</label>
+                <input class="form-input" type="number" min="1" max="5" value="3" id="difficulty">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Task type</label>
+            <select class="form-input" id="taskType">
+                <option>Analytical</option>
+                <option selected>Creative</option>
+                <option>Rote Memorization</option>
+                <option>Passive Listening</option>
+            </select>
+        </div>
+        <button class="btn" style="width:100%;" onclick="addStudySession()">Add session & update dashboard</button>
+    </div>
+  </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
